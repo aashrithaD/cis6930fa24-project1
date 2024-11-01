@@ -4,6 +4,7 @@ import os
 from main import process_file
 from argparse import Namespace
 
+nltk.download('wordnet')
 
 class TestSensitiveDataRedactor(unittest.TestCase):
     
