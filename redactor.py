@@ -3,6 +3,7 @@ import argparse
 import os
 import sys
 import re
+import nltk
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from nltk.corpus import wordnet as wn
 
