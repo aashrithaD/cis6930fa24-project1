@@ -6,6 +6,7 @@ import re
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from nltk.corpus import wordnet as wn
 
+nltk.download('wordnet')
 nlp = spacy.load("en_core_web_md")
 
 def redact_names(text, stats):

@@ -4,6 +4,7 @@ import os
 from main import process_file
 from argparse import Namespace
 
+
 class TestSensitiveDataRedactor(unittest.TestCase):
     
     def setUp(self):
@@ -14,7 +15,7 @@ class TestSensitiveDataRedactor(unittest.TestCase):
         self.test_input_file = os.path.join(self.test_dir.name, "test_input.txt")
         with open(self.test_input_file, 'w') as f:
             f.write("Dear anna, please call me at (123) 456-7890. "
-                     "My email is anna@example.com. I met you on Sept 21, 2024 at 5 PM.")
+                     "My email is anna@example.com. I meet you on Sept 21, 2024 at 5 PM.")
 
     def tearDown(self):
         # Clean up the temporary directory
@@ -67,7 +68,7 @@ class TestSensitiveDataRedactor(unittest.TestCase):
             names=False,
             dates=False,
             phones=False,
-            concept="met",
+            concept="meet",
             address=False,
             output=self.test_dir.name,
             input=[self.test_input_file],
