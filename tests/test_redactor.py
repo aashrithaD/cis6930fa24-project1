@@ -18,8 +18,8 @@ class TestSensitiveDataRedactor(unittest.TestCase):
         # Create a temporary input file with test content
         self.test_input_file = os.path.join(self.test_dir.name, "test_input.txt")
         with open(self.test_input_file, 'w') as f:
-            f.write("Dear anna, please call me at (123) 456-7890. "
-                     "My email is anna@example.com. I meet you on Sept 21, 2024 at 5 PM.")
+            f.write("Dear anna, My phone no is (123) 456-7890. "
+                     "My email is anna@example.com. I meet you on Sept 2, 2024 at 1 PM.")
 
     def tearDown(self):
         # Clean up the temporary directory

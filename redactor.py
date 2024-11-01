@@ -10,44 +10,43 @@ from nltk.corpus import wordnet as wn
 nltk.download('wordnet')
 nlp = spacy.load("en_core_web_md")
 
+# Redact names from the text and update the stats
 def redact_names(text, stats):
     doc = nlp(text)
 
-    # Handle greetings followed by names (e.g., "Dear George")
-    greeting_pattern = r'\b(Dear|Hello|Hi|Greetings)\s+([A-Z][a-zA-Z]+(?:\s[A-Z][a-zA-Z]+)?)\b'  # Capture first and last names
-    text, greeting_matches = re.subn(greeting_pattern, 
-        lambda match: f"{match.group(1)} " + "█" * len(match.group(2).replace(" ", "")), text)  # Redact name while keeping space
-    stats['Names_count'] += greeting_matches  # Add count for greeting matches
+    # Handle greetings followed by names 
+    greeting_regex_pattern = r'\b(Dear|Hello|Hi|Greetings)\s+([A-Z][a-zA-Z]+(?:\s[A-Z][a-zA-Z]+)?)\b'  
+    text, greeting_count = re.subn(greeting_regex_pattern, 
+        lambda match: f"{match.group(1)} " + "█" * len(match.group(2).replace(" ", "")), text) 
+    stats['Names_count'] += greeting_count  
 
     # Redact names with initials (e.g., "Sean A. O'Brien")
     name_with_initial_pattern = r'\b([A-Z][a-z]+)\s([A-Z]\.)\s([A-Z][a-zA-Z\']+)\b'
-    text, initial_matches = re.subn(name_with_initial_pattern,
+    text, initial_count = re.subn(name_with_initial_pattern,
         lambda match: "█" * (len(match.group(1)) + len(match.group(2)) + len(match.group(3)) + 2), text)
-    stats['Names_count'] += initial_matches  # Add count for initial matches
+    stats['Names_count'] += initial_count 
 
     # General pattern to detect alphanumeric identifiers
     identifier_pattern = r'\b[A-Za-z]+[-_]?[0-9]+[A-Za-z0-9-]*\b'
-    identifier_found = re.findall(identifier_pattern, text)
-    identifier_matches = len(re.findall(identifier_pattern, text)) 
     text = re.sub(identifier_pattern, lambda match: match.group(0), text)
 
     # Redacting before "@" in email addresses
     email_pattern = r'([a-zA-Z0-9._%+-]+(?:\'[a-zA-Z0-9._%+-]+)*)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})'
-    emails_found = re.findall(email_pattern, text)
+    found_emails = re.findall(email_pattern, text)
     text = re.sub(email_pattern, lambda match: "█" * len(match.group(1)) + "@" + match.group(2), text)
-    stats['Names_count'] += len(emails_found)  # Add count for email addresses
-    print("Email Matches:", [match[0] for match in emails_found]) 
+    stats['Names_count'] += len(found_emails)  
 
     # Redact `PERSON` entities only
     for entity in doc.ents:
         if entity.label_ == "PERSON" and not re.search(identifier_pattern, entity.text):
             stats['Names_count'] += 1
-            print(entity.text)
             text = re.sub(rf'\b{re.escape(entity.text)}\b', "█" * len(entity.text), text)
 
     return text
 
+# Redact date formats from the text and update the stats
 def redact_dates(text, stats):
+
     # Specific date patterns to redact based on exact formats provided
     date_patterns = [
         r'\b(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s+\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\b', 
@@ -66,7 +65,6 @@ def redact_dates(text, stats):
         r'\b(?:19[0-9]{2}|20[0-2][0-5])\b',            # Standalone years from 1900 to 2025
     ]
 
-    # Apply each regex pattern to redact dates that match the specified formats
     for pattern in date_patterns:
         matches = re.findall(pattern, text)
         stats['Dates_count'] += len(matches)
@@ -74,8 +72,9 @@ def redact_dates(text, stats):
 
     return text
 
+# Redact phone numbers from the text and update the stats
 def redact_phones(text, stats):
-    # Define stricter patterns for phone numbers
+    # Patterns for phone numbers
     phone_patterns = [
         r'\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b',                           # Standard 10-digit formats: 123-456-7890
         r'\(\d{3}\)\s?\d{3}[-.\s]?\d{4}\b',                             # Format with parentheses: (123) 456-7890
@@ -92,21 +91,17 @@ def redact_phones(text, stats):
     # Iterate through all matches in the text
     for match in re.finditer(combined_pattern, text):
         matched_number = match.group(0)
-        print(f"Matched Phone Number: {matched_number}")
-
-        # Update the stats count
         stats['Phones_count'] += 1
 
-        # Redact the matched phone number
         text = text.replace(matched_number, "█" * len(matched_number))
 
     return text
 
+# Redact addresses from the text and update the stats
 def redact_address(text, stats):
     # Use SpaCy to identify GPE, LOC, and FAC entities
     doc = nlp(text)
 
-    # Redact address entities recognized by SpaCy
     for entity in doc.ents:
         if entity.label_ in ["GPE", "LOC", "FAC"]:
             stats['Addresses_count'] +=1
@@ -123,11 +118,11 @@ def redact_address(text, stats):
     for pattern in address_patterns:
         matches = re.findall(pattern, text)
         stats['Addresses_count'] += len(matches)  
-        print(re.findall(pattern, text))
         text = re.sub(pattern, lambda match: "█" * len(match.group(0)), text, flags=re.IGNORECASE)
 
     return text
 
+# Calculate the Wu-Palmer similarity between two terms
 def word_similarity(term1, term2):
     syn1 = wn.synsets(term1)
     syn2 = wn.synsets(term2)
@@ -136,6 +131,7 @@ def word_similarity(term1, term2):
         return syn1[0].wup_similarity(syn2[0])  # Wu-Palmer Similarity
     return 0
 
+# Retrieve similar terms for a given concept using WordNet
 def get_similar_terms(concept, threshold=0.4):
     stemmer = PorterStemmer()
     lemmatizer = WordNetLemmatizer()
@@ -162,22 +158,21 @@ def get_similar_terms(concept, threshold=0.4):
 
     return similar_terms
 
+# Redact concepts from the text based on similar terms and update the stats
 def redact_concepts(text, concept, stats):
     if not concept:
         return text
 
     similar_terms = get_similar_terms(concept)
-    similar_terms = {term.lower() for term in similar_terms}  # Normalize to lower case
+    similar_terms = {term.lower() for term in similar_terms}  # Convert to lower case
     redacted_lines = []
-    found_terms = []  # List to store found similar terms
+    found_terms = []
 
-    # Create a regex pattern for the similar terms without variations
     similar_pattern = r'\b(' + '|'.join(similar_terms) + r')(s|es|ing)?\b'  # Matches the base word and its variations
 
     lines = text.splitlines()
 
     for line in lines:
-        # Split line into sentences based on punctuation
         sentences = re.split(r'(?<=[.!?]) +|(?<=\.\.\.)', line)  # Split on '.', '?', '!', or '...'
         redacted_sentences = []
 
@@ -185,21 +180,20 @@ def redact_concepts(text, concept, stats):
             # Check if any term in the sentence matches the similar terms
             match = re.search(similar_pattern, sentence.lower())
             if match:
-                # Add the found term to the list
                 stats['Concepts_count'] += 1
-                found_terms.append(match.group(0))  # Store the found term
-                redacted_sentences.append("█" * len(sentence))  # Redact entire sentence
+                found_terms.append(match.group(0))  
+                redacted_sentences.append("█" * len(sentence))  
             else:
                 redacted_sentences.append(sentence)
 
         # Rejoin redacted sentences into a single line
         redacted_lines.append(" ".join(redacted_sentences))
 
-    # Print the found similar words
-    print("Found similar words:", set(found_terms))  # Print unique found terms
+    print("Found similar words:", set(found_terms))  
 
-    return "\n".join(redacted_lines)  # Join lines back into the full text
+    return "\n".join(redacted_lines)  
 
+# Parse command-line arguments for the script
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Sensitive Data Redactor - Redacts Names, Dates, Phone Numbers, Concepts, and Addresses")
     parser.add_argument('--input', type=str, nargs='+', required=True, help="Input files")
@@ -212,6 +206,7 @@ def parse_arguments():
     parser.add_argument('--stats', type=str, help="Output file for stats (use 'stdout' or 'stderr' for standard output)")
     return parser.parse_args()
 
+# Output the statistics of redacted files to the specified destination
 def output_stats(statistics, stats_output):
     output = []
     output.append("Statistics of Redacted Files:")
@@ -230,6 +225,7 @@ def output_stats(statistics, stats_output):
         with open(stats_output, 'w') as file:
             file.write(output_text)
 
+# Process a given file to redact sensitive information 
 def process_file(file_path, args):
     with open(file_path, 'r') as file:
         text = file.read()

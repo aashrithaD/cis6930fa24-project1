@@ -1,0 +1,6 @@
+1. WordNet Lemmatizer, https://www.nltk.org/_modules/nltk/stem/wordnet.html, Helped me understand lemmatization techniques in natural language processing.
+2. Porter Stemmer, https://www.nltk.org/howto/stem.html, Helped me understand stemming methods.
+3. Wu-Palmer Similarity, https://www.nltk.org/howto/wordnet.html, Helped in understanding semantic similarity measures.
+4. Hyponyms, https://stackoverflow.com/questions/15330725/how-to-get-all-the-hyponyms-of-a-word-synset-in-python-nltk-and-wordnet, Helped clarify how to retrieve hyponyms in WordNet using NLTK.
+5. Regex, https://regexr.com/, Helped understand regular expressions and their usage for text processing.
+6. SpaCy, https://spacy.io/, Helped me understand NLP techniques and identify person and location entities in text.

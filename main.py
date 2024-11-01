@@ -2,7 +2,7 @@ import glob
 import sys
 from redactor import (redact_names, redact_dates, redact_phones, redact_concepts, redact_address, parse_arguments, output_stats, process_file)
 
-# Main Execution Function
+# Main Function
 def main():
     args = parse_arguments()
     statistics = []

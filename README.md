@@ -19,7 +19,7 @@ The Redactor is a Python application that effectively identifies and redacts sen
 
 2. Install Dependencies:
 
-    pip install -r 
+    pipenv install
 
 3. Download Required Models
    Ensure you have the SpaCy model and NLTK data installed:
@@ -46,6 +46,7 @@ pipenv run python file_name.py --input '*.txt' \
 - `--dates`: correspond to any written dates (4/9/2025, April 9th, 22/2/22, etc.)
 - `--phones`: describes any phone number in its various forms.
 - `--address`: corresponds to any physical (postal) address (not e-mail address).
+- `--concept`: corresponds to any concept you specify.
 - `--stats`: Choose statistics output destination (`stderr`, `stdout`, or a file path)
 
 2. To run the test cases:
@@ -147,7 +148,7 @@ Return: (str) The text with sentences containing the concept redacted.
 
 8. parse_arguments(): Parses command-line arguments for the script.
 
-Return: (argparse.Namespace) Parsed command-line arguments.
+Return: Parsed command-line arguments.
 
 9. output_stats(statistics, stats_output): Outputs redaction statistics to stdout, stderr, or a specified file.
 
@@ -195,5 +196,5 @@ Bugs:
 1. Some names that are part of longer words or contain underscores are not redacted correctly.
 2. Terms like "cc" and "bcc" are occasionally treated as names.
 3. The word "thu" is sometimes incorrectly identified as a name.
-4. Addresses are not redacted properly when they include elements like floor numbers, state abbreviations, or specific identifiers such as "502" in "502 Blvd, Downtown."
+4. Addresses are not redacted properly when they include elements like floor numbers, country or state or city codes, or specific identifiers such as "502" in "502 Blvd, Downtown."
 5. Names stats are counted twice because they are counted based on both regex match and SpaCy
