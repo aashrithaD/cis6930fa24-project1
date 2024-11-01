@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e7787f9a07a918e61d867621709cf7e9c915dfdd9166dc560e3cc878dd30761d"
+            "sha256": "273f664ad5657107c72ac84fccb7cd436083eb210e760a08d770b1c19432cd2d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -246,6 +246,9 @@
                 "sha256:ecd12e3bacf3eed5486e4cd8ede3c12da66ee0e0a9d0ae046962bc2bb503acef"
             ],
             "version": "==2.0.8"
+        },
+        "en-core-web-md": {
+            "file": "https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.8.0/en_core_web_md-3.8.0-py3-none-any.whl"
         },
         "idna": {
             "hashes": [
