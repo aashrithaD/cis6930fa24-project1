@@ -82,9 +82,8 @@ class TestSensitiveDataRedactor(unittest.TestCase):
         self.assertEqual(result["stats"]["Concepts_count"], 1) 
 
     def test_redact_addresses(self):
-        # Modify the input file to include an address
         with open(self.test_input_file, 'w') as f:
-            f.write("Please send the package to 123 Main St, Springfield, IL 62701.")
+            f.write("I live at 123 Main St, Gainesville, FL 32608.")
         
         args = Namespace(
             names=False,

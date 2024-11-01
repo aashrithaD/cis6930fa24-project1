@@ -227,6 +227,10 @@ def output_stats(statistics, stats_output):
 
 # Process a given file to redact sensitive information 
 def process_file(file_path, args):
+
+    if not os.path.exists(args.output):
+        os.makedirs(args.output)
+        
     with open(file_path, 'r') as file:
         text = file.read()
 
