@@ -3,6 +3,8 @@ import tempfile
 import os
 from main import process_file
 from argparse import Namespace
+from nltk.stem import WordNetLemmatizer, PorterStemmer
+from nltk.corpus import wordnet as wn
 
 nltk.download('wordnet')
 
