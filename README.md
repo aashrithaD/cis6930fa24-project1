@@ -49,7 +49,7 @@ pipenv run python file_name.py --input '*.txt' \
 - `--concept`: corresponds to any concept you specify.
 - `--stats`: Choose statistics output destination (`stderr`, `stdout`, or a file path)
 
-2. To run the test cases:
+2. To run the test cases:  
 pipenv run python -m pytest -v   
 
 ## The stdout/stderr Format
@@ -60,14 +60,15 @@ The program can output statistics to:
 3. The standard error (stderr).
 
 The output format for statistics is as follows:
-
-Statistics of Redacted Files:
-File: <filename>
-Names_count: <count>
-Dates_count: <count>
-Phones_count: <count>
-Concepts_count: <count>
+```sh
+Statistics of Redacted Files:  
+File: <filename>  
+Names_count: <count>  
+Dates_count: <count>  
+Phones_count: <count>  
+Concepts_count: <count>  
 Addresses_count: <count>
+``` 
 
 EXAMPLE:
 
@@ -81,100 +82,113 @@ input: "Dear Alice Johnson, your appointment is scheduled for February 5, 2024, 
  
 output: "Dear █████████████, your appointment is scheduled for ████████████████, at ███ ████████████, ███████████. If you have any questions, please call us at ██████████████. ██████████████████████████████████████████████████████████████████████████████████"
 
+## Video  
+https://github.com/user-attachments/assets/92f4ef80-e87f-45fd-97fc-1caea55745f0
+
 ## Functions
 
 #### main.py
 
-1. main(): The `main` function handles command-line arguments, processes each input file for sensitive data redaction, collects statistics, and outputs the results, including error handling for file processing.
+1. **main()**: The `main` function handles command-line arguments, processes each input file for sensitive data redaction, collects statistics, and outputs the results, including error handling for file processing.
 
 #### redactor.py
 
-1. redact_names(text, stats): Identifies and redacts names, initials, and emails in the text.
-
+1. **redact_names(text, stats)**: Identifies and redacts names, initials, and emails in the text.
+```sh
 Args: 
 text (str): The input text to redact.
 stats (dict): A dictionary to track the count of redacted names.
 
 Return: (str) The text with names redacted.
+```
 
-2. redact_dates(text, stats): Identifies and redacts dates in various formats within the text.
-
+2. **redact_dates(text, stats)**: Identifies and redacts dates in various formats within the text.
+```sh
 Args:
 text (str): The input text to redact.
 stats (dict): A dictionary to track the count of redacted dates.
 
 Return: (str) The text with dates redacted.
-
-3. redact_phones(text, stats): Identifies and redacts phone numbers in various formats within the text.
-
+```
+    
+3. **redact_phones(text, stats)**: Identifies and redacts phone numbers in various formats within the text.
+```sh
 Args:
 text (str): The input text to redact.
 stats (dict): A dictionary to track the count of redacted phone numbers.
 
 Return: (str) The text with phone numbers redacted.
+```
 
-4. redact_address(text, stats): Identifies and redacts addresses based on SpaCy entity recognition and regex patterns.
-
+4. **redact_address(text, stats)**: Identifies and redacts addresses based on SpaCy entity recognition and regex patterns.
+```sh
 Args:
 text (str): The input text to redact.
 stats (dict): A dictionary to track the count of redacted addresses.
 
 Return: (str) The text with addresses redacted.
+```
 
-5. word_similarity(term1, term2): Computes the Wu-Palmer similarity score between two terms using WordNet.
-
+5. **word_similarity(term1, term2)**: Computes the Wu-Palmer similarity score between two terms using WordNet.
+```sh
 Args:
 term1 (str): The first term to compare.
 term2 (str): The second term to compare.
 
 Return: (float) The similarity score between the two terms (0 to 1).
+```
 
-6. get_similar_terms(concept, threshold=0.4): Generates a set of terms similar to a given concept using WordNet synonyms and hyponyms.
-
+6. **get_similar_terms(concept, threshold=0.4)**: Generates a set of terms similar to a given concept using WordNet synonyms and hyponyms.
+```sh
 Args:
 concept (str): The base concept to find similar terms for.
 threshold (float, optional): Similarity threshold for including terms. Default is 0.4.
 
 Return: (set) A set of terms similar to the given concept.
+```
 
-7. redact_concepts(text, concept, stats): Redacts sentences in the text containing terms similar to a specified concept.
-
+7. **redact_concepts(text, concept, stats)**: Redacts sentences in the text containing terms similar to a specified concept.
+```sh
 Args:
 text (str): The input text to redact.
 concept (str): The base concept to redact related terms.
 stats (dict): A dictionary to track the count of redacted concepts.
 
 Return: (str) The text with sentences containing the concept redacted.
+```
 
-8. parse_arguments(): Parses command-line arguments for the script.
-
+8. **parse_arguments()**: Parses command-line arguments for the script.
+```sh
 Return: Parsed command-line arguments.
+```
 
-9. output_stats(statistics, stats_output): Outputs redaction statistics to stdout, stderr, or a specified file.
-
+9. **output_stats(statistics, stats_output)**: Outputs redaction statistics to stdout, stderr, or a specified file.
+```sh
 Args:
 statistics (list of dict): List of stats dictionaries for each file processed.
 stats_output (str): Output destination for the statistics ("stdout", "stderr", or a file path).
+```
 
-10. process_file(file_path, args): Processes a single file by applying redaction functions and saving the results.
-
+10. **process_file(file_path, args)**: Processes a single file by applying redaction functions and saving the results.
+```sh
 Args:
 file_path (str): Path of the file to be processed.
 args (argparse.Namespace): Parsed arguments specifying redaction options.
 
 Return: (dict) A dictionary with the filename and redaction stats.
+```
 
 ### test_redactor.py
 
-1. test_redact_names(self): Tests the process_file function to ensure it correctly redacts names from the input text.
+1. **test_redact_names(self)**: Tests the process_file function to ensure it correctly redacts names from the input text.
 
-2. test_redact_dates(self): Tests the process_file function to check if it correctly redacts dates from the input text.
+2. **test_redact_dates(self)**: Tests the process_file function to check if it correctly redacts dates from the input text.
 
-3. test_redact_phones(self): Tests the process_file function to verify it accurately redacts phone numbers from the input text.
+3. **test_redact_phones(self)**: Tests the process_file function to verify it accurately redacts phone numbers from the input text.
 
-4. test_redact_concepts(self): Tests the process_file function to ensure it properly redacts specified concepts from the input text.
+4. **test_redact_concepts(self)**: Tests the process_file function to ensure it properly redacts specified concepts from the input text.
 
-5. test_redact_addresses(self): Tests the process_file function to check if it effectively redacts addresses from the modified input text.
+5. **test_redact_addresses(self)**: Tests the process_file function to check if it effectively redacts addresses from the modified input text.
 
 ## Bugs and Assumptions
 
