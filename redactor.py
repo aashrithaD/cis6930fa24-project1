@@ -26,6 +26,12 @@ def redact_names(text, stats):
         lambda match: "█" * (len(match.group(1)) + len(match.group(2)) + len(match.group(3)) + 2), text)
     stats['Names_count'] += initial_count 
 
+    # New pattern to redact names in the format "Last, First Middle"
+    last_first_pattern = r'\b([A-Z][a-zA-Z]+),\s+([A-Z][a-zA-Z]+(?:\s[A-Z])?)\b'
+    text, last_first_count = re.subn(last_first_pattern,
+        lambda match: "█" * len(match.group(1)) + ", " + "█" * len(match.group(2).replace(" ", "")), text)
+    stats['Names_count'] += last_first_count
+
     # General pattern to detect alphanumeric identifiers
     identifier_pattern = r'\b[A-Za-z]+[-_]?[0-9]+[A-Za-z0-9-]*\b'
     text = re.sub(identifier_pattern, lambda match: match.group(0), text)
