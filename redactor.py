@@ -253,12 +253,14 @@ def process_file(file_path, args):
     if args.address:
         text = redact_address(text, stats)
 
-    censored_path = os.path.join(args.output, os.path.basename(file_path) + ".censored")
+    base_filename = os.path.splitext(os.path.basename(file_path))[0]
+    censored_filename = base_filename + ".censored"
+    censored_path = os.path.join(args.output, censored_filename)
 
     with open(censored_path, 'w') as file:
         file.write(text)
 
     return {
-        "filename": file_path,
+        "filename": censored_filename,
         "stats": stats,
     }
