@@ -2,6 +2,7 @@ import spacy
 import argparse
 import os
 import sys
+import glob
 import re
 import nltk
 from nltk.stem import WordNetLemmatizer, PorterStemmer
@@ -231,7 +232,7 @@ def process_file(file_path, args):
     if not os.path.exists(args.output):
         os.makedirs(args.output)
         
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r', encoding='utf-8') as file:
         text = file.read()
 
     stats = {
@@ -257,10 +258,28 @@ def process_file(file_path, args):
     censored_filename = base_filename + ".censored"
     censored_path = os.path.join(args.output, censored_filename)
 
-    with open(censored_path, 'w') as file:
+    with open(censored_path, 'w', encoding='utf-8') as file:
         file.write(text)
 
     return {
         "filename": censored_filename,
         "stats": stats,
     }
+
+def main():
+    args = parse_arguments()
+    statistics = []
+
+    for pattern in args.input:
+        for file_path in glob.glob(pattern):
+            try:
+                stats = process_file(file_path, args)
+                statistics.append(stats)
+            except Exception as e:
+                print(f"Error processing {file_path}: {e}", file=sys.stderr)
+
+    if args.stats:
+        output_stats(statistics, args.stats)
+
+if __name__ == "__main__":
+    main()

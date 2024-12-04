@@ -1,7 +1,7 @@
 import unittest
 import tempfile
 import os
-from main import process_file
+from redactor import process_file
 from argparse import Namespace
 import nltk
 from nltk.stem import WordNetLemmatizer, PorterStemmer
