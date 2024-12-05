@@ -72,7 +72,7 @@ Addresses_count: <count>
 
 EXAMPLE:
 
-1. pipenv run python main.py --input '*.txt' \
+1. pipenv run python redactor.py --input '*.txt' \
                     --names --dates --phones --address\
                     --concept 'kids' \
                     --output 'files/' \
